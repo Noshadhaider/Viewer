@@ -1,50 +1,145 @@
 <!doctype html>
-<html lang="ur">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>HomeCam</title>
+<meta name="theme-color" content="#0d0a23">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet">
 <style>
-  body{font-family:system-ui,sans-serif;margin:0 auto;padding:16px;background:#f4f4f2;color:#222;max-width:560px}
-  h1{font-size:22px;margin:0 0 12px}
-  input[type=text]{width:100%;box-sizing:border-box;padding:10px;font-size:15px;border:1px solid #bbb;border-radius:8px;margin:4px 0}
-  button{padding:12px 8px;font-size:15px;border:1px solid #999;border-radius:8px;background:#fff;cursor:pointer}
-  button:active{background:#e8e8e8}
-  button.on{background:#fff3c4;border-color:#c9a400}
-  button.rec{background:#ffd9d9;border-color:#c33}
-  .row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
-  .card{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #ccc;border-radius:12px;padding:14px;margin-bottom:10px;cursor:pointer}
-  .dot{width:12px;height:12px;border-radius:50%;background:#aaa;flex:none}
-  .dot.on{background:#3b9a2f}
+  :root{
+    --night:#0d0a23; --dusk:#2a1c5a; --violet:#7b57ea; --violet-d:#4a2f9e;
+    --lav:#e9e3ff; --mute:#a99fd6; --glass:rgba(255,255,255,.08); --edge:rgba(255,255,255,.15);
+    --mint:#5eead4; --rose:#ff7a93; --amber:#ffd37a;
+  }
+  *{-webkit-tap-highlight-color:transparent}
+  html{background:linear-gradient(180deg,#0d0a23 0%,#1c1443 45%,#2e2063 100%) fixed,var(--night)}
+  body{
+    font-family:"Outfit",system-ui,-apple-system,"Segoe UI",sans-serif;
+    margin:0 auto;padding:22px 16px 56px;max-width:520px;min-height:100vh;box-sizing:border-box;
+    color:var(--lav);
+  }
+  body::before{
+    content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+    background-image:
+      radial-gradient(1.8px 1.8px at 20px 30px,#fff,transparent),
+      radial-gradient(1px 1px at 90px 120px,rgba(255,255,255,.8),transparent),
+      radial-gradient(2.2px 2.2px at 160px 60px,#fff,transparent),
+      radial-gradient(1px 1px at 230px 180px,rgba(255,255,255,.7),transparent),
+      radial-gradient(1.6px 1.6px at 300px 90px,#fff,transparent);
+    background-size:340px 220px,270px 310px,410px 260px,190px 170px,360px 300px;
+  }
+  body::after{
+    content:"";position:fixed;left:0;right:0;bottom:0;height:26vh;z-index:-1;pointer-events:none;
+    background:linear-gradient(180deg,#171040,#080618);
+    clip-path:polygon(0 62%,10% 48%,22% 58%,38% 34%,52% 52%,68% 38%,84% 54%,100% 44%,100% 100%,0 100%);
+    opacity:.95;
+  }
+  h1{font-size:34px;font-weight:300;letter-spacing:-.5px;margin:6px 0 10px;text-align:center}
+  .sub{font-size:13px;color:var(--mute);margin-top:2px}
+
+  /* buttons */
+  button{
+    font:inherit;font-size:15px;font-weight:500;color:var(--lav);cursor:pointer;
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:14px 10px;border-radius:22px;
+    background:var(--glass);border:1px solid var(--edge);
+    -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+    transition:transform .12s,background .2s;
+  }
+  button:active{transform:scale(.97);background:rgba(255,255,255,.16)}
+  button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--mint);outline-offset:2px}
+  button.on{background:linear-gradient(135deg,#8d68ff,#5a38c4);border-color:rgba(255,255,255,.35);box-shadow:0 0 22px rgba(139,104,255,.55)}
+  button.rec{background:rgba(255,122,147,.25);border-color:var(--rose);color:#ffd6de}
+  #bPhoto,#bLive{background:linear-gradient(135deg,#7b57ea,#4a2f9e);border-color:rgba(255,255,255,.25)}
+  #bBack,#bGBack{align-self:flex-start;padding:8px 16px;font-size:14px;border-radius:999px}
+  .rm{padding:6px 12px;font-size:12px;border-radius:999px}
+  #bPhoto::before,#bLive::before,#bMic::before,#bFace::before,#bFlash::before,#bRec::before,#gal1::before,#gal2::before{content:"";width:18px;height:18px;flex:none;background:currentColor;
+    -webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+    -webkit-mask-position:center;mask-position:center}
+#bPhoto::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 8h3l2-3h6l2 3h3v11H4z'/%3E%3Ccircle cx='12' cy='13' r='3.5'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 8h3l2-3h6l2 3h3v11H4z'/%3E%3Ccircle cx='12' cy='13' r='3.5'/%3E%3C/svg%3E")}
+#bLive::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='6' width='13' height='12' rx='3'/%3E%3Cpath d='M16 10l5-3v10l-5-3'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='6' width='13' height='12' rx='3'/%3E%3Cpath d='M16 10l5-3v10l-5-3'/%3E%3C/svg%3E")}
+#bMic::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='3' width='6' height='11' rx='3'/%3E%3Cpath d='M5 11a7 7 0 0014 0M12 18v3'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='3' width='6' height='11' rx='3'/%3E%3Cpath d='M5 11a7 7 0 0014 0M12 18v3'/%3E%3C/svg%3E")}
+#bFace::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 12a8 8 0 0113.7-5.6L20 8M20 4v4h-4M20 12a8 8 0 01-13.7 5.6L4 16M4 20v-4h4'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 12a8 8 0 0113.7-5.6L20 8M20 4v4h-4M20 12a8 8 0 01-13.7 5.6L4 16M4 20v-4h4'/%3E%3C/svg%3E")}
+#bFlash::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13 3L5 14h6l-1 7 8-11h-6z'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13 3L5 14h6l-1 7 8-11h-6z'/%3E%3C/svg%3E")}
+#bRec::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='7'/%3E%3Ccircle cx='12' cy='12' r='2.5' fill='black'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='7'/%3E%3Ccircle cx='12' cy='12' r='2.5' fill='black'/%3E%3C/svg%3E")}
+#gal1::before,#gal2::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='16' rx='3'/%3E%3Ccircle cx='9' cy='10' r='2'/%3E%3Cpath d='M21 16l-5-5-8 9'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='16' rx='3'/%3E%3Ccircle cx='9' cy='10' r='2'/%3E%3Cpath d='M21 16l-5-5-8 9'/%3E%3C/svg%3E")}
+
+  /* inputs */
+  input[type=text]{width:100%;box-sizing:border-box;padding:12px 14px;font:inherit;font-size:14px;color:var(--lav);
+    background:rgba(0,0,0,.25);border:1px solid var(--edge);border-radius:16px;margin:8px 0}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:6px;border-radius:99px;background:rgba(255,255,255,.18);outline-offset:6px}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 0 0 5px rgba(139,104,255,.5)}
+  input[type=range]::-moz-range-thumb{width:24px;height:24px;border:0;border-radius:50%;background:#fff;box-shadow:0 0 0 5px rgba(139,104,255,.5)}
+
+  /* camera list */
+  #sum{text-align:center;margin:0 0 22px;display:flex;flex-direction:column;align-items:center}
+  #sum .n{font-size:84px;font-weight:200;line-height:1;letter-spacing:-3px}
+  #sum .l{font-size:15px;color:var(--mute);margin-top:2px}
+  .card{
+    position:relative;display:flex;align-items:center;gap:14px;overflow:hidden;
+    background:linear-gradient(135deg,#7a55e6 0%,#4a2f9e 75%);
+    border:1px solid rgba(255,255,255,.22);border-radius:28px;padding:20px 20px;margin-bottom:14px;cursor:pointer;
+    box-shadow:0 16px 34px rgba(12,5,45,.55);
+  }
+  .card::after{content:"";position:absolute;right:-30px;top:-40px;width:150px;height:150px;border-radius:50%;
+    background:radial-gradient(circle,rgba(255,255,255,.22),transparent 70%);pointer-events:none}
+  .card.off{background:linear-gradient(135deg,#3a3260,#241d45);box-shadow:none;opacity:.8}
+  .dot{width:12px;height:12px;border-radius:50%;background:#7d73a8;flex:none}
+  .dot.on{background:var(--mint);box-shadow:0 0 12px var(--mint)}
   .grow{flex:1;min-width:0}
-  .nm{font-size:17px}
-  .sub{font-size:12px;color:#666;margin-top:2px}
-  .rm{padding:6px 10px;font-size:12px}
-  #stage{position:relative;width:100%;height:320px;background:#ddd;border-radius:12px;overflow:hidden;margin-top:10px}
+  .nm{font-size:22px;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .card .sub{color:#d6ccff}
+  .big{font-size:40px;font-weight:200;letter-spacing:-1px;position:relative}
+  .big small{font-size:18px;margin-left:1px}
+
+  /* camera page */
+  #pCam,#pGal{flex-direction:column}
+  #st{display:table;margin:0 auto 14px;font-size:13px;padding:8px 16px;border-radius:999px;
+    background:var(--glass);border:1px solid var(--edge);color:var(--lav)}
+  #stage{position:relative;width:100%;aspect-ratio:4/3;background:rgba(0,0,0,.4);border-radius:30px;overflow:hidden;
+    border:1px solid var(--edge);box-shadow:0 18px 40px rgba(8,3,35,.6)}
   #stage img,#stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+  #photo:not([src]){visibility:hidden}
   #vid{display:none;background:#000}
-  #st{font-size:14px;margin:8px 0}
-  #info{font-size:13px;color:#555;margin:6px 0;min-height:18px}
-  #pbar{display:none;margin-top:8px;font-size:13px}
-  #volrow{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13px}
+  #info{font-size:14px;color:var(--mute);margin:14px 0;min-height:20px;text-align:center}
+  #pbar{display:none;margin-top:14px;font-size:13px;text-align:center}
+  #pmsg{display:block;color:var(--mute);margin-bottom:8px}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  #volrow{display:flex;align-items:center;gap:12px;margin-top:16px;padding:14px 18px;font-size:14px;
+    background:var(--glass);border:1px solid var(--edge);border-radius:24px}
   #volrow input{flex:1}
-  details{margin-top:14px;font-size:13px}
+  #volv{min-width:32px;text-align:right}
+  #gal1,#gal2{width:100%;margin-top:14px}
+  details{margin-top:18px;font-size:13px;padding:14px 18px;background:var(--glass);border:1px solid var(--edge);border-radius:24px;color:var(--mute)}
+  summary{cursor:pointer}
+  #saveDb{width:100%}
   .page{display:none}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
-  .item{background:#fff;border:1px solid #ccc;border-radius:12px;padding:8px;font-size:12px}
-  .item img{width:100%;height:110px;object-fit:cover;border-radius:8px;cursor:zoom-in;display:block}
+
+  /* gallery */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+  .item{background:var(--glass);border:1px solid var(--edge);border-radius:24px;padding:10px;font-size:12px;
+    -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+  .item img{width:100%;height:120px;object-fit:cover;border-radius:16px;cursor:zoom-in;display:block}
   .item audio{width:100%;margin:6px 0}
-  .item .meta{margin:6px 0;color:#555;word-break:break-word}
+  .item .meta{margin:8px 2px;color:var(--mute);word-break:break-word}
   .item .acts{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-  .item .acts button{padding:8px 4px;font-size:13px}
-  #ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:9;align-items:center;justify-content:center;flex-direction:column;gap:10px}
-  #ov img{max-width:96%;max-height:80%;object-fit:contain}
+  .item .acts button{padding:8px 4px;font-size:13px;border-radius:14px}
+  #gcount{text-align:center}
+  #bClear{width:100%;margin-top:12px;color:#ffd6de;border-color:rgba(255,122,147,.45)}
+  #ov{display:none;position:fixed;inset:0;background:rgba(8,5,28,.92);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);z-index:9;align-items:center;justify-content:center;flex-direction:column;gap:14px}
+  #ov img{max-width:96%;max-height:78%;object-fit:contain;border-radius:20px}
+
+  @media (prefers-reduced-motion:reduce){button{transition:none}}
 </style>
 </head>
 <body>
 
 <div id="pList" class="page">
   <h1>Mere camere</h1>
+  <div id="sum"></div>
   <div id="devs"><div class="sub">Dhoond raha hoon…</div></div>
   <button id="gal1" style="width:100%;margin-top:6px">Gallery</button>
   <details>
@@ -76,7 +171,7 @@
     <button id="bMic">Awaaz suno</button>
     <button id="bFace">Camera: peeche wala</button>
     <button id="bFlash">Flash: band</button>
-    <button id="bRec">Record karo (awaaz/video)</button>
+    <button id="bRec">Awaaz record karo</button>
   </div>
   <div id="volrow">
     <span>Awaaz tez:</span>
@@ -106,9 +201,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script>
 const ROOM = "0t23ziy93k2wz3heyapv6kc4";
-// Metered.ca (free) se mila TURN username/password - Config.kt wala hi likhen
-const TURN_USER = "b1756e0f8e86a4b999c10639";
-const TURN_PASS = "H5p+jEBZb0HZwUXD";
 const CFG = {
   apiKey: "AIzaSyCpGIpxbReosnWh8oBV6wwXeZzd0kdHq04",
   projectId: "cctv-35395",
@@ -117,7 +209,7 @@ const CFG = {
 const $ = id => document.getElementById(id);
 
 function show(id) {
-  ["pList", "pCam", "pGal"].forEach(p => $(p).style.display = p === id ? "block" : "none");
+  ["pList", "pCam", "pGal"].forEach(p => $(p).style.display = p === id ? (p === "pList" ? "block" : "flex") : "none");
 }
 
 let idb = null, mem = [];
@@ -175,8 +267,7 @@ function stamp(ts) {
   return d.getFullYear() + z(d.getMonth() + 1) + z(d.getDate()) + "_" + z(d.getHours()) + z(d.getMinutes()) + z(d.getSeconds());
 }
 function fileName(it) {
-  const mp4 = (it.blob.type || "").indexOf("mp4") >= 0;
-  const ext = it.type === "photo" ? "jpg" : (mp4 ? (it.type === "video" ? "mp4" : "m4a") : "webm");
+  const ext = it.type === "photo" ? "jpg" : ((it.blob.type || "").indexOf("mp4") >= 0 ? "m4a" : "webm");
   return (it.dev || "camera").replace(/[^A-Za-z0-9]+/g, "_") + "_" + stamp(it.ts) + "." + ext;
 }
 function saveItem(it) {
@@ -203,14 +294,13 @@ async function renderGallery() {
       im.src = u; im.onclick = () => openOverlay(it, u);
       d.appendChild(im);
     } else {
-      const au = document.createElement(it.type === "video" ? "video" : "audio");
-      au.controls = true; au.src = u; au.playsInline = true;
-      if (it.type === "video") au.style.width = "100%";
+      const au = document.createElement("audio");
+      au.controls = true; au.src = u;
       d.appendChild(au);
     }
     const m = document.createElement("div");
     m.className = "meta";
-    m.textContent = (it.type === "photo" ? "Photo" : it.type === "video" ? "Video" : "Awaaz") + (it.flash ? " (flash)" : "") + " | " + (it.dev || "") + " | " + new Date(it.ts).toLocaleString();
+    m.textContent = (it.type === "photo" ? "Photo" : "Awaaz") + (it.flash ? " (flash)" : "") + " | " + (it.dev || "") + " | " + new Date(it.ts).toLocaleString();
     d.appendChild(m);
     const acts = document.createElement("div");
     acts.className = "acts";
@@ -260,6 +350,8 @@ function isOnline(ts) { return ts > 0 && (Date.now() + offset - ts) < 60000; }
 function renderList() {
   const box = $("devs");
   const ids = Object.keys(devices);
+  const nOn = ids.filter(i => isOnline((devices[i].status || {}).ts)).length;
+  $("sum").innerHTML = ids.length ? '<span class="n">' + nOn + '</span><span class="l">' + (nOn === 1 ? "camera online" : "camere online") + " (kul " + ids.length + ")</span>" : "";
   if (!ids.length) {
     box.innerHTML = '<div class="sub">Abhi koi camera nahi mila. Purane phone par HomeCam kholen.</div>';
     return;
@@ -274,9 +366,10 @@ function renderList() {
     const on = isOnline(st.ts);
     const c = document.createElement("div");
     c.className = "card";
-    const bat = st.battery >= 0 ? " | battery " + st.battery + "%" : "";
+    const big = on && st.battery >= 0 ? '<div class="big">' + st.battery + "<small>%</small></div>" : "";
+    c.className = "card" + (on ? "" : " off");
     c.innerHTML = '<div class="dot' + (on ? " on" : "") + '"></div><div class="grow"><div class="nm"></div><div class="sub">' +
-      (on ? "Online" + bat : "Offline") + "</div></div>";
+      (on ? "Online" : "Offline") + "</div></div>" + big;
     c.querySelector(".nm").textContent = st.name || "Naam nahi";
     c.onclick = () => openDevice(id, st.name || "Camera");
     if (!on) {
@@ -444,11 +537,11 @@ function startSession(m) {
   const base = ref.child("rtc").child(sid);
   const p = new RTCPeerConnection({ iceServers: [
     { urls: "stun:stun.l.google.com:19302" },
-    { urls: "stun:stun.relay.metered.ca:80" },
+    { urls: "stun:stun1.l.google.com:19302" },
     {
-      urls: ["turn:global.relay.metered.ca:80", "turn:global.relay.metered.ca:80?transport=tcp", "turn:global.relay.metered.ca:443", "turns:global.relay.metered.ca:443?transport=tcp"],
-      username: TURN_USER,
-      credential: TURN_PASS
+      urls: ["turn:global.relay.metered.ca:80", "turn:global.relay.metered.ca:443", "turn:global.relay.metered.ca:443?transport=tcp"],
+      username: "openrelayproject",
+      credential: "openrelayproject"
     }
   ] });
   pc = p;
@@ -541,21 +634,20 @@ $("bRec").onclick = () => {
     return;
   }
   if (typeof MediaRecorder === "undefined") { setInfo("Is browser mein awaaz record nahi hoti."); return; }
-  const hasVid = remoteStream.getVideoTracks().length > 0;
-  const types = hasVid ? ["video/webm;codecs=vp8,opus", "video/webm", "video/mp4"] : ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"];
+  const types = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"];
   const mt = types.find(t => MediaRecorder.isTypeSupported(t));
   recChunks = [];
   const name = camName;
-  const r = new MediaRecorder(hasVid ? remoteStream : new MediaStream(remoteStream.getAudioTracks()), mt ? { mimeType: mt } : undefined);
+  const r = new MediaRecorder(new MediaStream(remoteStream.getAudioTracks()), mt ? { mimeType: mt } : undefined);
   rec = r;
   r.ondataavailable = e => { if (e.data && e.data.size) recChunks.push(e.data); };
   r.onstop = async () => {
-    const blob = new Blob(recChunks, { type: r.mimeType || (hasVid ? "video/webm" : "audio/webm") });
+    const blob = new Blob(recChunks, { type: r.mimeType || "audio/webm" });
     rec = null;
-    $("bRec").textContent = "Record karo (awaaz/video)";
+    $("bRec").textContent = "Awaaz record karo";
     $("bRec").className = "";
     if (blob.size > 0) {
-      await dbAdd({ type: hasVid ? "video" : "audio", blob: blob, ts: Date.now(), dev: name });
+      await dbAdd({ type: "audio", blob: blob, ts: Date.now(), dev: name });
       setInfo("Awaaz gallery mein save ho gayi. Gallery mein sun, save ya delete kar sakte hain.");
     }
   };
